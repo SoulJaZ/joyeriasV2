@@ -3,8 +3,17 @@ const db = require("../config/db");
 const jwt = require("jsonwebtoken");
 
 exports.register = async (req, res) => {
-  const { nombre, email, password, telefono } = req.body;
+  
+    if (!req.body) {
+      return res.status(400).json({ message: 'Body requerido' });
+    }
 
+    const { nombre, email, password, telefono } = req.body;
+
+    if (!nombre || !email || !password) {
+      return res.status(400).json({ message: 'Campos obligatorios faltantes' });
+    }
+  
   const hash = await bcrypt.hash(password, 10);
 
   await db.query(
@@ -14,7 +23,10 @@ exports.register = async (req, res) => {
   );
 
   res.statu(201).json({ message: "Usuario registrado exitosamente" });
+  console.log(req.body);
 };
+
+
 
 exports.login = async (req, res) => {
   try {
@@ -57,3 +69,5 @@ exports.login = async (req, res) => {
     res.status(500).json({ message: "Error al iniciar sesión" });
   }
 };
+
+
