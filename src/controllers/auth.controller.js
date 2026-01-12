@@ -3,17 +3,27 @@ const db = require("../config/db");
 const jwt = require("jsonwebtoken");
 
 exports.register = async (req, res) => {
-  
-    if (!req.body) {
-      return res.status(400).json({ message: 'Body requerido' });
-    }
+  if (!req.body) {
+    return res.status(400).json({ message: "Body requerido" });
+  }
 
-    const { nombre, email, password, telefono } = req.body;
+  const { nombre, email, password, telefono } = req.body;
 
-    if (!nombre || !email || !password) {
-      return res.status(400).json({ message: 'Campos obligatorios faltantes' });
-    }
-  
+  if (!nombre || !email || !password) {
+    return res.status(400).json({ message: "Campos obligatorios faltantes" });
+  }
+
+  // 1️⃣ Verificar si el email ya existe
+  const [[exists]] = await db.query("SELECT id FROM users WHERE email = ?", [
+    email,
+  ]);
+
+  if (exists) {
+    return res.status(409).json({
+      message: "El correo ya está registrado",
+    });
+  }
+
   const hash = await bcrypt.hash(password, 10);
 
   await db.query(
@@ -22,15 +32,19 @@ exports.register = async (req, res) => {
     [nombre, email, hash, telefono]
   );
 
-  res.statu(201).json({ message: "Usuario registrado exitosamente" });
+  res.status(201).json({ message: "Usuario registrado exitosamente" });
   console.log(req.body);
 };
-
-
 
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Email y contraseña requeridos",
+      });
+    }
 
     const [users] = await db.query(
       'SELECT * FROM users WHERE email = ? AND estado = "activo"',
@@ -66,8 +80,7 @@ exports.login = async (req, res) => {
       },
     });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Error al iniciar sesión" });
   }
 };
-
-
