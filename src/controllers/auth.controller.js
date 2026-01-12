@@ -61,6 +61,7 @@ exports.login = async (req, res) => {
     if (!valid) {
       return res.status(401).json({ message: "Credenciales inválidas." });
     }
+    console.log('JWT_SECRET:', process.env.JWT_SECRET);
 
     const token = jwt.sign(
       {
