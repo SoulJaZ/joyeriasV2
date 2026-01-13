@@ -1,26 +1,20 @@
 const express = require('express');
 const router = express.Router();
 
+const productController = require('../controllers/product.controller');
 const auth = require('../middlewares/auth.middleware');
 const role = require('../middlewares/role.middleware');
 const ROLES = require('../utils/roles');
 
-router.post(
-    '/',
-    auth,
-    role([ROLES.ADMIN]),
-    (req, res) => {
-        res.json({ message: 'Producto creado (solo ADMIN)' });
-    }
-);
+// ADMIN
+router.post('/', auth, role([ROLES.ADMIN]), productController.create);
+//GET POR ID
+router.get('/:id', auth, productController.getById);
+router.put('/:id', auth, role([ROLES.ADMIN]), productController.update);
+router.delete('/:id', auth, role([ROLES.ADMIN]), productController.remove);
 
-router.get(
-    '/',
-    auth,
-    role([ROLES.ADMIN, ROLES.USER]),
-    (req, res) => {
-        res.json({ message: 'Listado de productos' });
-    }
-);
+// ADMIN + USER
+router.get('/', auth, role([ROLES.ADMIN, ROLES.USER]), productController.getAll);
+router.get('/:id', auth, productController.getById);
 
 module.exports = router;

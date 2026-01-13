@@ -5,7 +5,7 @@ module.exports = (rolesPermitidos = []) => {
             return res.status(401).json({ message: 'No autenticado.' });
         }
 
-        if (!rolesPermitidos.includes(req.user.role_id)) {
+        if (!rolesPermitidos.includes(req.user.role)) {
             return res.status(403).json({ message: 'Acceso denegado.' });
         }
 

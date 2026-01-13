@@ -14,11 +14,15 @@ exports.register = async (req, res) => {
   }
 
   // 1️⃣ Verificar si el email ya existe
-  const [[exists]] = await db.query("SELECT id FROM users WHERE email = ?", [
-    email,
-  ]);
+  const [users] = await db.query(
+    `SELECT u.id, u.nombre, u.password, r.nombre AS role
+   FROM users u
+   JOIN roles r ON r.id = u.role_id
+   WHERE u.email = ? AND u.estado = 'activo'`,
+    [email]
+  );
 
-  if (exists) {
+  if (users.length) {
     return res.status(409).json({
       message: "El correo ya está registrado",
     });
@@ -47,7 +51,10 @@ exports.login = async (req, res) => {
     }
 
     const [users] = await db.query(
-      'SELECT * FROM users WHERE email = ? AND estado = "activo"',
+      `SELECT u.id, u.nombre, u.password, r.nombre AS role
+   FROM users u
+   JOIN roles r ON r.id = u.role_id
+   WHERE u.email = ? AND u.estado = 'activo'`,
       [email]
     );
 
@@ -61,12 +68,12 @@ exports.login = async (req, res) => {
     if (!valid) {
       return res.status(401).json({ message: "Credenciales inválidas." });
     }
-    console.log('JWT_SECRET:', process.env.JWT_SECRET);
+    console.log("JWT_SECRET:", process.env.JWT_SECRET);
 
     const token = jwt.sign(
       {
         id: user.id,
-        role_id: user.role_id,
+        role: user.role,
       },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES }
@@ -77,7 +84,7 @@ exports.login = async (req, res) => {
       user: {
         id: user.id,
         nombre: user.nombre,
-        role_id: user.role_id,
+        role: user.role,
       },
     });
   } catch (error) {
