@@ -17,6 +17,5 @@ router.get('/me',auth,role([ROLES.USER]),controller.getMyPayments);
 // ADMIN
 router.get('/',auth,role([ROLES.ADMIN]),controller.getAll);
 
-router.put('/:id',auth,role([ROLES.ADMIN]),controller.updateStatus);
 
 module.exports = router;

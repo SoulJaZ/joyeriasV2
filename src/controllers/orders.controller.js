@@ -1,5 +1,6 @@
 const db = require('../config/db');
 
+// CREAR PEDIDO (USER)
 exports.create = async (req, res) => {
   const userId = req.user.id;
 
@@ -45,3 +46,152 @@ exports.create = async (req, res) => {
     order_id: order.insertId
   });
 };
+
+// 🔹 USER → MIS PEDIDOS
+exports.getMyOrders = async (req, res) => {
+  const userId = req.user.id;
+
+  const [orders] = await db.query(
+    `SELECT 
+        o.id,
+        o.fecha,
+        o.total,
+        o.estado AS estado_pedido,
+        COALESCE(p.estado, 'sin_pago') AS estado_pago
+     FROM orders o
+     LEFT JOIN payments p
+       ON p.id = (
+         SELECT id
+         FROM payments
+         WHERE order_id = o.id
+         ORDER BY fecha_pago DESC
+         LIMIT 1
+       )
+     WHERE o.user_id = ?
+     ORDER BY o.fecha DESC`,
+    [userId]
+  );
+
+  res.json(orders);
+};
+
+// Mostrar productos por pedido
+exports.getOrderDetail = async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.id;
+
+  const [[order]] = await db.query(
+    `SELECT * FROM orders WHERE id = ? AND user_id = ?`,
+    [id, userId]
+  );
+
+  if (!order) {
+    return res.status(404).json({ message: 'Pedido no encontrado' });
+  }
+
+  const [items] = await db.query(
+    `SELECT p.nombre, oi.cantidad, oi.precio_unitario
+     FROM order_items oi
+     JOIN products p ON p.id = oi.product_id
+     WHERE oi.order_id = ?`,
+    [id]
+  );
+
+  res.json({ order, items });
+};
+
+// 🔹 ADMIN → TODOS LOS PEDIDOS
+exports.getAll = async (req, res) => {
+  const [orders] = await db.query(
+    `SELECT o.*, u.nombre AS cliente
+     FROM orders o
+     JOIN users u ON u.id = o.user_id
+     ORDER BY o.fecha DESC`
+  );
+
+  res.json(orders);
+};
+
+// UPDATE STATUS (ADMIN)
+// 💡 Aquí se activa trigger de stock
+exports.updateStatus = async (req, res) => {
+  const { id } = req.params;
+  const { estado } = req.body;
+
+  const estadosValidos = ['enviado', 'entregado', 'cancelado'];
+
+  if (!estadosValidos.includes(estado)) {
+    return res.status(400).json({ message: 'Estado no permitido' });
+  }
+
+  const [result] = await db.query(
+    `UPDATE orders SET estado = ? WHERE id = ?`,
+    [estado, id]
+  );
+
+  if (!result.affectedRows) {
+    return res.status(404).json({ message: 'Pedido no encontrado' });
+  }
+
+  res.json({ message: `Pedido marcado como ${estado}` });
+
+  // Si se aprueba → actualizar pedido
+  if (estado === "aprobado") {
+    // 1️⃣ Actualizar pedido
+    await db.query(
+      `UPDATE orders
+     SET estado = 'pagado'
+     WHERE id = (SELECT order_id FROM payments WHERE id = ?)`,
+      [id]
+    );
+
+    // 2️⃣ Obtener datos del pedido
+    const [[order]] = await db.query(
+      `SELECT id, total FROM orders
+     WHERE id = (SELECT order_id FROM payments WHERE id = ?)`,
+      [id]
+    );
+
+    // 3️⃣ Generar factura
+    const impuestos = order.total * 0.19;
+    const subtotal = order.total - impuestos;
+    const numeroFactura = `FAC-${Date.now()}`;
+
+    await db.query(
+      `INSERT INTO invoices
+     (order_id, numero_factura, subtotal, impuestos, total)
+     VALUES (?, ?, ?, ?, ?)`,
+      [order.id, numeroFactura, subtotal, impuestos, order.total]
+    );
+  }
+
+  res.json({ message: "Estado del pago actualizado" });
+};
+
+// 🔹 ADMIN → DETALLE DE PEDIDO
+exports.getOrderById = async (req, res) => {
+  const { id } = req.params;
+
+  const [[order]] = await db.query(
+    `SELECT o.*, u.nombre, u.email
+     FROM orders o
+     JOIN users u ON u.id = o.user_id
+     WHERE o.id = ?`,
+    [id]
+  );
+
+  if (!order) {
+    return res.status(404).json({ message: 'Pedido no encontrado' });
+  }
+
+  const [items] = await db.query(
+    `SELECT p.nombre, oi.cantidad, oi.precio_unitario
+     FROM order_items oi
+     JOIN products p ON p.id = oi.product_id
+     WHERE oi.order_id = ?`,
+    [id]
+  );
+
+  res.json({ order, items });
+};
+

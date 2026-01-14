@@ -159,16 +159,36 @@ set total = (
 where id = new.order_id;
 
 -- Trigger 3: Descontar stock SOLO cuando el pago es aprobado
-delimiter $$
-create trigger trg_discount_stock
-after update on payments
-for each row
-begin
-	if old.estado <> 'aprobado' and new.estado = 'aprobado' then
-		update products p
-		join order_items oi on p.id = oi.product_id
-		set p.stock = p.stock - oi.cantidad
-		where oi.order_id = new.order_id;
-    end if;
-end$$
-delimiter ;
+DELIMITER $$
+
+-- 2️⃣ Crear trigger actualizado
+CREATE TRIGGER trg_discount_stock
+AFTER UPDATE ON payments
+FOR EACH ROW
+BEGIN
+  -- Solo cuando pasa a aprobado
+  IF OLD.estado <> 'aprobado'
+     AND NEW.estado = 'aprobado' THEN
+
+    -- Validar stock suficiente
+    IF EXISTS (
+      SELECT 1
+      FROM products p
+      JOIN order_items oi ON p.id = oi.product_id
+      WHERE oi.order_id = NEW.order_id
+        AND p.stock < oi.cantidad
+    ) THEN
+      SIGNAL SQLSTATE '45000'
+      SET MESSAGE_TEXT = 'Stock insuficiente para completar el pedido';
+    END IF;
+
+    -- Descontar stock
+    UPDATE products p
+    JOIN order_items oi ON p.id = oi.product_id
+    SET p.stock = p.stock - oi.cantidad
+    WHERE oi.order_id = NEW.order_id;
+
+  END IF;
+END$$
+
+DELIMITER ;

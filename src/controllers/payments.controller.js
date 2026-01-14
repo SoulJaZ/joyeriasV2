@@ -1,4 +1,4 @@
-const db = require('../config/db');
+const db = require("../config/db");
 
 // OBTENER TODOS LOS PAGOS/PEDIDOS
 exports.getAll = async (req, res) => {
@@ -18,17 +18,17 @@ exports.create = async (req, res) => {
   const { order_id, metodo_pago, referencia, monto } = req.body;
 
   if (!order_id || !metodo_pago || !monto) {
-    return res.status(400).json({ message: 'Datos incompletos' });
+    return res.status(400).json({ message: "Datos incompletos" });
   }
 
-  // Verificar pedido 
+  // Verificar pedido
   const [[order]] = await db.query(
     `SELECT * FROM orders WHERE id = ? AND user_id = ?`,
     [order_id, userId]
   );
 
   if (!order) {
-    return res.status(404).json({ message: 'Pedido no encontrado' });
+    return res.status(404).json({ message: "Pedido no encontrado" });
   }
 
   // Crear pago
@@ -40,44 +40,11 @@ exports.create = async (req, res) => {
   );
 
   res.status(201).json({
-    message: 'Pago registrado, pendiente de aprobación',
-    payment_id: result.insertId
+    message: "Pago registrado, pendiente de aprobación",
+    payment_id: result.insertId,
   });
 };
-// UPDATE STATUS (ADMIN) 
-// 💡 Aquí se activa trigger de stock
-exports.updateStatus = async (req, res) => {
-  const { id } = req.params;
-  const { estado } = req.body;
 
-  const estadosValidos = ['pendiente', 'aprobado', 'rechazado'];
-
-  if (!estadosValidos.includes(estado)) {
-    return res.status(400).json({ message: 'Estado inválido' });
-  }
-
-  const [result] = await db.query(
-    `UPDATE payments SET estado = ?, fecha_pago = NOW()
-     WHERE id = ?`,
-    [estado, id]
-  );
-
-  if (result.affectedRows === 0) {
-    return res.status(404).json({ message: 'Pago no encontrado' });
-  }
-
-  // Si se aprueba → actualizar pedido
-  if (estado === 'aprobado') {
-    await db.query(
-      `UPDATE orders
-       SET estado = 'pagado'
-       WHERE id = (SELECT order_id FROM payments WHERE id = ?)`,
-      [id]
-    );
-  }
-
-  res.json({ message: 'Estado del pago actualizado' });
-};
 // OBTENER PAGO (USER)
 exports.getMyPayments = async (req, res) => {
   const userId = req.user.id;
@@ -92,4 +59,3 @@ exports.getMyPayments = async (req, res) => {
 
   res.json(rows);
 };
-

@@ -1,12 +1,27 @@
 const express = require('express');
 const router = express.Router();
+
 const controller = require('../controllers/orders.controller');
-const auth = require('../middlewares/auth.middleware')
+const auth = require('../middlewares/auth.middleware');
+const role = require('../middlewares/role.middleware');
+const ROLES = require('../utils/roles');
 
+// =====================
+// USER
+// =====================
+router.post('/', auth, role([ROLES.USER]), controller.create);
 
-router.post('/', auth, controller.create);
-router.get('/', auth, role([ROLES.ADMIN, ROLES.USER]), controller.getAll);
+router.get('/me', auth, role([ROLES.USER]), controller.getMyOrders);
 
+router.get('/:id/detail', auth, role([ROLES.USER, ROLES.ADMIN]), controller.getOrderDetail);
 
+// =====================
+// ADMIN
+// =====================
+router.get('/', auth, role([ROLES.ADMIN]), controller.getAll);
+
+router.get('/:id', auth, role([ROLES.ADMIN]), controller.getOrderById);
+
+router.put('/:id/status', auth, role([ROLES.ADMIN]), controller.updateStatus);
 
 module.exports = router;
