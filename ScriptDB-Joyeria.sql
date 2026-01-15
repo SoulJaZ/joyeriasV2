@@ -161,7 +161,7 @@ where id = new.order_id;
 -- Trigger 3: Descontar stock SOLO cuando el pago es aprobado
 DELIMITER $$
 
--- 2️⃣ Crear trigger actualizado
+-- Trigger 3: Crear trigger actualizado
 CREATE TRIGGER trg_discount_stock
 AFTER UPDATE ON payments
 FOR EACH ROW
