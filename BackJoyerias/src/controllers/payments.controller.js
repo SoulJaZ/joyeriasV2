@@ -43,6 +43,37 @@ exports.create = async (req, res) => {
     message: "Pago registrado, pendiente de aprobación",
     payment_id: result.insertId,
   });
+
+   // Si se aprueba → actualizar pedido
+  if (estado === "aprobado") {
+    // 1️⃣ Actualizar pedido
+    await db.query(
+      `UPDATE orders
+     SET estado = 'pagado'
+     WHERE id = (SELECT order_id FROM payments WHERE id = ?)`,
+      [id]
+    );
+     
+
+    // 2️⃣ Obtener datos del pedido
+    const [[order]] = await db.query(
+      `SELECT id, total FROM orders
+     WHERE id = (SELECT order_id FROM payments WHERE id = ?)`,
+      [id]
+    );
+
+    // 3️⃣ Generar factura
+    const impuestos = order.total * 0.19;
+    const subtotal = order.total - impuestos;
+    const numeroFactura = `FAC-${Date.now()}`;
+
+    await db.query(
+      `INSERT INTO invoices
+     (order_id, numero_factura, subtotal, impuestos, total)
+     VALUES (?, ?, ?, ?, ?)`,
+      [order.id, numeroFactura, subtotal, impuestos, order.total]
+    );
+  }
 };
 
 // OBTENER PAGO (USER)

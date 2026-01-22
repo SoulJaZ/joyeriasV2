@@ -19,7 +19,7 @@ export default function AdminOrders() {
   return (
     <div>
         <h2>🔨 Administración de pedidos</h2>
-        <OrdersAdminCards orders={orders} />
+        {/* <OrdersAdminCards orders={orders} /> */}
 
         <table className="admin-table">
             <thead>

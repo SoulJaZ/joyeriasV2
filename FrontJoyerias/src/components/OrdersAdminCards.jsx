@@ -3,6 +3,7 @@ export default function OrdersAdminCards({ orders }) {
   const pendientes = orders.filter(o => o.estado === "pendiente").length;
   const enviados = orders.filter(o => o.estado === "enviado").length;
   const entregados = orders.filter(o => o.estado === "entregado").length;
+  const aprobado = orders.filter(o => o.estado === "aprobado").length;
 
   const totalVentas = orders.reduce(
     (acc, o) => acc + Number(o.total),
@@ -15,6 +16,7 @@ export default function OrdersAdminCards({ orders }) {
       <Card title="Pendientes" value={pendientes} />
       <Card title="Enviados" value={enviados} />
       <Card title="Entregados" value={entregados} />
+      <Card title="Pagados" value={aprobado} />
       <Card title="Ventas totales" value={`$${totalVentas.toLocaleString()}`} />
     </div>
   );

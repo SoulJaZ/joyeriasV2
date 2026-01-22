@@ -30,35 +30,7 @@ export default function Invoices() {
    return (
     <div style={{ padding: "20px" }}>
       <h2>🧾 Mis facturas</h2>
-
-      <table className="admin-table">
         <AdminInvoices />
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Pedido</th>
-            <th>Fecha</th>
-            <th>Total</th>
-            <th>Descargar</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {invoices.map(i => (
-            <tr key={i.id}>
-              <td>{i.id}</td>
-              <td>#{i.order_id}</td>
-              <td>{new Date(i.fecha_emision).toLocaleDateString()}</td>
-              <td>${i.total}</td>
-              <td>
-                <button onClick={() => handleDownload(i.id, i.numero_factura)}>
-                  PDF
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
     </div>
   );
 }

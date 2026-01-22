@@ -5,25 +5,34 @@ import AdminOrders from "./AdminOrders";
 
 function OrdersCards({ orders }) {
   const total = orders.length;
-  const pendientes = orders.filter(o => o.estado_pedido === "pendiente").length;
+  const pendientes = orders.filter(o => o.estado === "pendiente").length;
   const pagados = orders.filter(o => o.estado_pago === "aprobado").length;
+  const enviados = orders.filter(o => o.estado === "enviado").length;
+  const entregados = orders.filter(o => o.estado === "entregado").length;
 
+  const totalVentas = orders.reduce(
+    (acc, o) => acc + Number(o.total),
+    0
+  );
   return (
+    
     <div className="cards">
-      <div className="card">
-        <h3>Total pedidos</h3>
-        <p>{total}</p>
-      </div>
-
-      <div className="card">
-        <h3>Pendientes</h3>
-        <p>{pendientes}</p>
-      </div>
-
-      <div className="card">
-        <h3>Pagados</h3>
-        <p>{pagados}</p>
-      </div>
+       
+      <Card title="Pedidos totales" value={total} />
+      <Card title="Pendientes" value={pendientes} />
+      <Card title="Enviados" value={enviados} />
+      <Card title="Entregados" value={entregados} />
+      <Card title="Pagados" value={pagados} />
+      <Card title="Ventas totales" value={`$${totalVentas.toLocaleString()}`} />
+    
+    </div>
+  );
+}
+function Card({ title, value }) {
+  return (
+    <div className="card admin">
+      <h3>{title}</h3>
+      <p>{value}</p>
     </div>
   );
 }
@@ -54,7 +63,7 @@ function OrderDetail({ data, onClose }) {
       </table>
 
       <p><b>Total:</b> ${data.order.total}</p>
-          <AdminOrders />
+          
       <button onClick={onClose}>Cerrar</button>
     </div>
   );
@@ -88,7 +97,7 @@ export default function Orders() {
 
   return (
     <div style={{ padding: "20px" }}>
-      
+      <AdminOrders />
       {/* Cards arriba */}
       <OrdersCards orders={orders} />
 
@@ -112,7 +121,7 @@ export default function Orders() {
               <td>{o.id}</td>
               <td>{new Date(o.fecha).toLocaleDateString()}</td>
               <td>${o.total}</td>
-              <td>{o.estado_pedido}</td>
+              <td>{o.estado}</td>
               <td>{o.estado_pago}</td>
               <td>
                 <button onClick={() => loadDetail(o.id)}>
