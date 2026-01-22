@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { getAllInvoices, downloadInvoice } from "../api/invoices.api";
+import { getAllInvoices, downloadInvoice, getMyInvoices } from "../api/invoices.api";
 import InvoiceAdminCards from "../components/InvoicesAdminCards";
 
 
-export default function AdminInvoices() {
+export default function InvoicesUser() {
   const [invoices, setInvoices] = useState([]);
 
   useEffect(() => {
@@ -11,7 +11,7 @@ export default function AdminInvoices() {
   }, []);
 
   const loadInvoices = async () => {
-    const { data } = await getAllInvoices();
+    const { data } = await getMyInvoices();
     setInvoices(data);
   };
 
@@ -27,10 +27,9 @@ export default function AdminInvoices() {
 
   return (
     <div style={{ padding: "20px" }}>
-      <h2>🗂
-         Administración de facturas</h2>
+      <h2>🗂 facturas</h2>
 
-      <InvoiceAdminCards invoices={invoices} />
+      <InvoiceAdmi  nCards invoices={invoices} />
 
       <table className="admin-table">
         <thead>

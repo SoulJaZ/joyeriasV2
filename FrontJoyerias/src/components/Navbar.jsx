@@ -16,7 +16,7 @@ export default function Navbar() {
 
                 {user.role === "user" && (
                     <>
-                        <Link to="/orders">Mis pedidos</Link>
+                        <Link to="/orders/me">Mis pedidos</Link>
                         <Link to="/payments">Mis pagos</Link>
                         <Link to="/invoices">Mis facturas</Link>
                     </>

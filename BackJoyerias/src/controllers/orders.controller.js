@@ -99,6 +99,9 @@ exports.getOrderDetail = async (req, res) => {
 
   res.json({ order, items });
 };
+// 🔹 ADMIN → DETALLE DE PEDIDO
+
+
 
 // 🔹 ADMIN → TODOS LOS PEDIDOS
 exports.getAll = async (req, res) => {

@@ -6,6 +6,8 @@ import UserDashboard from "../pages/UserDashboard";
 import ProtectedRoute from "../auth/ProtectedRoute";
 import Invoices from "../pages/Invoices";
 import Payments from "../pages/Payments";
+import OrdersUsers from "../pages/OrdersUser";
+import InvoicesUser from "../pages/InvoicesUser";
 
 export default function AppRouter() {
   return (
@@ -26,19 +28,19 @@ export default function AppRouter() {
         />
 
         <Route
-          path="/orders"
+          path="/orders/me"
           element={
             <ProtectedRoute roles={["user"]}>
-              <Orders />
+              <OrdersUsers />
             </ProtectedRoute>
           }
         />
 
         <Route
-          path="/invoices"
+          path="/invoices/me"
           element={
             <ProtectedRoute roles={["user"]}>
-              <Invoices />
+              <InvoicesUser />
             </ProtectedRoute>
           }
         />

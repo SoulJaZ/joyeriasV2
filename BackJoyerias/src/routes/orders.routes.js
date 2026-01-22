@@ -11,7 +11,7 @@ const ROLES = require('../utils/roles');
 // =====================
 router.post('/', auth, role([ROLES.USER]), controller.create);
 
-router.get('/me', auth, role([ROLES.USER, ROLES.ADMIN]), controller.getMyOrders);
+router.get('/me', auth, role([ROLES.USER, ROLES.ADMIN]), controller.getMyOrders, controller.getAll);
 
 router.get('/:id/detail', auth, role([ROLES.USER, ROLES.ADMIN]), controller.getOrderDetail);
 

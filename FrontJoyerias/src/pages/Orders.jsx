@@ -86,7 +86,7 @@ export default function Orders() {
   }, []);
 
   const loadOrders = async () => {
-    const { data } = await api.get("/orders/me");
+    const { data } = await api.get("/orders");
     setOrders(data);
   };
 
@@ -110,7 +110,8 @@ export default function Orders() {
             <th>Fecha</th>
             <th>Total</th>
             <th>Pedido</th>
-            <th>Pago</th>
+            <th>Usuario</th>
+ 
             <th></th>
           </tr>
         </thead>
@@ -122,7 +123,8 @@ export default function Orders() {
               <td>{new Date(o.fecha).toLocaleDateString()}</td>
               <td>${o.total}</td>
               <td>{o.estado}</td>
-              <td>{o.estado_pago}</td>
+              <td>{o.cliente}</td>
+
               <td>
                 <button onClick={() => loadDetail(o.id)}>
                   Ver detalle

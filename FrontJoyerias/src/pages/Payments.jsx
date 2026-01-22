@@ -64,8 +64,8 @@ export default function Payments() {
                         <tr key={p.id}>
                             <td>{p.id}</td>
                             <td>#{p.order_id}</td>
-                            <td>{p.cliente}</td>
-                            <td>{p.metodo}</td>
+                            <td>{p.usuario}</td>
+                            <td>{p.metodo_pago}</td>
                             <td>${p.monto}</td>
 
                             <td className={`status-${p.estado}`}>

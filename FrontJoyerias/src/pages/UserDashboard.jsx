@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../auth/AuthContext";
+import Navbar from "../components/Navbar";
 import api from "../api/axios";
 import "../components/dashboard.css";
 
@@ -27,7 +28,9 @@ export default function UserDashboard() {
 
   return (
     <div className="dashboard">
+      <Navbar />
       <h2>👋 Bienvenido, {user.nombre}</h2>
+
 
       <div className="cards">
         <div className="card">
