@@ -4,49 +4,81 @@ import Orders from "../pages/Orders";
 import AdminDashboard from "../pages/AdminDashboard";
 import UserDashboard from "../pages/UserDashboard";
 import ProtectedRoute from "../auth/ProtectedRoute";
+import Invoices from "../pages/Invoices";
+import Payments from "../pages/Payments";
 
 export default function AppRouter() {
-  return (
-    <BrowserRouter>
-      <Routes>
+    return (
+        <BrowserRouter>
+            <Routes>
 
-        {/* PUBLIC */}
-        <Route path="/login" element={<Login />} />
+                {/* PUBLIC */}
+                <Route path="/login" element={<Login />} />
 
-        {/* USER */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute roles={["user"]}>
-              <UserDashboard />
-            </ProtectedRoute>
-          }
-        />
+                {/* USER */}
+                <Route
+                    path="/dashboard"
+                    element={
+                        <ProtectedRoute roles={["user"]}>
+                            <UserDashboard />
+                        </ProtectedRoute>
+                    }
+                />
 
-        <Route
-          path="/orders"
-          element={
-            <ProtectedRoute roles={["user"]}>
-              <Orders />
-            </ProtectedRoute>
-          }
-        />
+                <Route
+                    path="/orders"
+                    element={
+                        <ProtectedRoute roles={["user"]}>
+                            <Orders />
+                        </ProtectedRoute>
+                    }
+                />
+                {/* USER */}
+                <Route path="/invoices" element={
+                    <ProtectedRoute role="user">
+                        <Invoices />
+                    </ProtectedRoute>
+                } />
 
-        {/* ADMIN */}
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute roles={["admin"]}>
-              <AdminDashboard />
-              <Orders />
-            </ProtectedRoute>
-          }
-        />
+                {/* ADMIN */}
+                <Route path="/admin/invoices" element={
+                    <ProtectedRoute role="admin">
+                        <Invoices />
+                    </ProtectedRoute>
+                } />
 
-        {/* DEFAULT */}
-        <Route path="*" element={<Navigate to="/login" />} />
+                {/* ADMIN */}
+                <Route
+                    path="/admin"
+                    element={
+                        <ProtectedRoute roles={["admin"]}>
+                            <AdminDashboard />
+                        </ProtectedRoute>
+                    }
+                />
+                {/* ADMIN */}
+                <Route
+                    path="/admin/orders"
+                    element={
+                        <ProtectedRoute roles={["admin"]}>
+                            <Orders />
+                        </ProtectedRoute>
+                    }
+                />
+                {/* ADMIN */}
+                <Route
+                    path="/admin/payments"
+                    element={
+                        <ProtectedRoute roles={["admin"]}>
+                            <Payments />
+                        </ProtectedRoute>
+                    }
+                />
 
-      </Routes>
-    </BrowserRouter>
-  );
+                {/* DEFAULT */}
+                <Route path="*" element={<Navigate to="/login" />} />
+
+            </Routes>
+        </BrowserRouter>
+    );
 }

@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { getMyInvoices, downloadInvoice } from "../api/invoices.api";
-import "../components/InvoiceCards.css"
-import AdminInvoices from "./AdminInvoices";
+import { getAllInvoices, downloadInvoice } from "../api/invoices.api";
+import InvoiceAdminCards from "../components/InvoicesAdminCards";
 
 
-export default function Invoices() {
+export default function AdminInvoices() {
   const [invoices, setInvoices] = useState([]);
 
   useEffect(() => {
@@ -12,12 +11,11 @@ export default function Invoices() {
   }, []);
 
   const loadInvoices = async () => {
-    const { data } = await getMyInvoices();
+    const { data } = await getAllInvoices();
     setInvoices(data);
   };
 
-  // Manipulador de descarga
-   const handleDownload = async (id, numero) => {
+  const handleDownload = async (id, numero) => {
     const res = await downloadInvoice(id);
     const url = window.URL.createObjectURL(new Blob([res.data]));
     
@@ -27,19 +25,22 @@ export default function Invoices() {
     a.click();
   };
 
-   return (
+  return (
     <div style={{ padding: "20px" }}>
-      <h2>🧾 Mis facturas</h2>
+      <h2>🗂 Administración de facturas</h2>
+
+      <InvoiceAdminCards invoices={invoices} />
 
       <table className="admin-table">
-        <AdminInvoices />
         <thead>
           <tr>
             <th>ID</th>
+            <th>Factura</th>
+            <th>Cliente</th>
             <th>Pedido</th>
-            <th>Fecha</th>
             <th>Total</th>
-            <th>Descargar</th>
+            <th>Fecha</th>
+            <th>PDF</th>
           </tr>
         </thead>
 
@@ -47,12 +48,14 @@ export default function Invoices() {
           {invoices.map(i => (
             <tr key={i.id}>
               <td>{i.id}</td>
+              <td>{i.numero_factura}</td>
+              <td>{i.cliente}</td>
               <td>#{i.order_id}</td>
-              <td>{new Date(i.fecha_emision).toLocaleDateString()}</td>
               <td>${i.total}</td>
+              <td>{new Date(i.fecha_emision).toLocaleDateString()}</td>
               <td>
                 <button onClick={() => handleDownload(i.id, i.numero_factura)}>
-                  PDF
+                  Descargar
                 </button>
               </td>
             </tr>

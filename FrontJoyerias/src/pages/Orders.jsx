@@ -1,12 +1,39 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
+import "../components/OrdersCards.css"
+import AdminOrders from "./AdminOrders";
+
+function OrdersCards({ orders }) {
+  const total = orders.length;
+  const pendientes = orders.filter(o => o.estado_pedido === "pendiente").length;
+  const pagados = orders.filter(o => o.estado_pago === "aprobado").length;
+
+  return (
+    <div className="cards">
+      <div className="card">
+        <h3>Total pedidos</h3>
+        <p>{total}</p>
+      </div>
+
+      <div className="card">
+        <h3>Pendientes</h3>
+        <p>{pendientes}</p>
+      </div>
+
+      <div className="card">
+        <h3>Pagados</h3>
+        <p>{pagados}</p>
+      </div>
+    </div>
+  );
+}
 
 function OrderDetail({ data, onClose }) {
   return (
     <div style={modal}>
       <h3>Detalle del pedido #{data.order.id}</h3>
 
-      <table width="100%" border="1" cellPadding="6">
+      <table width="100%" border="1" cellPadding="6" className="admin-table">
         <thead>
           <tr>
             <th>Producto</th>
@@ -27,7 +54,7 @@ function OrderDetail({ data, onClose }) {
       </table>
 
       <p><b>Total:</b> ${data.order.total}</p>
-
+          <AdminOrders />
       <button onClick={onClose}>Cerrar</button>
     </div>
   );
@@ -61,9 +88,13 @@ export default function Orders() {
 
   return (
     <div style={{ padding: "20px" }}>
+      
+      {/* Cards arriba */}
+      <OrdersCards orders={orders} />
+
       <h2>📦 Mis pedidos</h2>
 
-      <table border="1" cellPadding="8" width="100%">
+      <table border="1" cellPadding="8" width="100%" className="admin-table">
         <thead>
           <tr>
             <th>ID</th>
@@ -99,3 +130,6 @@ export default function Orders() {
     </div>
   );
 }
+
+
+

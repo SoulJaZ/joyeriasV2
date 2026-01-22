@@ -1,0 +1,93 @@
+.card.admin {
+  border-left: 5px solid #2c7be5;
+}
+
+.card.admin p {
+  color: #2c7be5;
+}
+/* Tabla base */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  font-size: 14px;
+}
+
+/* Encabezado */
+.admin-table thead {
+  background: #1e293b; /* slate */
+}
+
+.admin-table th {
+  color: #f8fafc;
+  text-align: left;
+  padding: 12px 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+/* Filas */
+.admin-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.admin-table tbody tr {
+  transition: background 0.2s ease;
+}
+
+.admin-table tbody tr:hover {
+  background: #f1f5f9;
+}
+
+/* Última fila sin borde */
+.admin-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Total en negrita */
+.admin-table td:nth-child(4) {
+  font-weight: 600;
+}
+
+/* Select */
+.admin-table select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.admin-table select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+/* Estados visuales */
+.status-pendiente {
+  color: #d97706;
+  font-weight: 600;
+}
+
+.status-enviado {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.status-entregado {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.status-cancelado {
+  color: #dc2626;
+  font-weight: 600;
+}
